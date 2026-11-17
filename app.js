@@ -6,7 +6,7 @@ function renderProduct(product) {
   let discountedPrice = '';
   if (mode === 'ends') {
     color = product.available < 6 ? 'red' : product.available < 15 ? 'orange' : 'yellow';
-    const percent = color === 'red' ? 70 : 50;
+    const percent = {red: 70, orange: 50, yellow: 30}[color];
     discount = '<span class="discount-label">' + percent + '% de desconto</span>';
     const originalCents = Math.round(product.price * 100);
     const discountedCents = Math.round(originalCents * (100 - percent) / 100);
