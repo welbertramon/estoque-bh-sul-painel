@@ -20,3 +20,22 @@ nav{display:flex;gap:8px}.nav{border:0;background:transparent;padding:10px 12px;
   .metric small { font-size: 13px; line-height: 1.3; }
   .metric strong { font-size: 21px; white-space: normal; overflow-wrap: anywhere; }
 }
+
+.product-info[class*="discount-"] {
+  min-width: 0;
+  padding: 10px 12px;
+  border-inline-start: 4px solid var(--discount-ink);
+  border-radius: 8px;
+  background: var(--discount-background);
+  color: var(--discount-ink);
+}
+.discount-red { --discount-background: #fee8e8; --discount-ink: #941e2b; }
+.discount-orange { --discount-background: #ffeddc; --discount-ink: #984010; }
+.discount-yellow { --discount-background: #fff4ca; --discount-ink: #705300; }
+.product-info[class*="discount-"] .sku { color: inherit; }
+.discount-label {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 700;
+}
