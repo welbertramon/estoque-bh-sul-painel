@@ -1,6 +1,24 @@
 let base,mode='all';const $=id=>document.getElementById(id);const qty=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:2});const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});const isEnd=p=>p.available>0&&p.available<30;const matchesMode=(p,view)=>p.available>0&&(view==='ends'?isEnd(p):!isEnd(p));const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function openList(next){if(!base)return;mode=next;$('home').hidden=true;$('list').hidden=false;$('list-title').textContent=mode==='all'?'Todos os estoques':'Pontas de estoque';$('list-description').textContent=mode==='all'?'Selecione a subseção para consultar os produtos com saldo disponível, excluindo as pontas de estoque.':'Produtos com saldo disponível maior que zero e menor que 30.';$('section').value='';render();window.scrollTo(0,0);$('section').focus({preventScroll:true})}
-function render(){const section=$('section').value;if(!section){$('results').innerHTML='<div class="empty">Selecione uma subseção para ver os produtos.</div>';return}const products=base.products.filter(p=>p.section===section&&matchesMode(p,mode)).sort((a,b)=>b.available-a.available||a.name.localeCompare(b.name,'pt-BR'));$('results').innerHTML='<div class="result-count">'+products.length+' produto'+(products.length!==1?'s':'')+' nesta subseção</div>'+(products.length?products.map(p=>'<article class="product"><div class="product-info"><div class="sku">LM '+esc(p.lm)+'</div><div class="name">'+esc(p.name)+'</div></div><div class="metric '+(p.available<0?'negative':'')+'"><small>Estoque disponível</small><strong>'+qty.format(p.available)+(p.m2?' m²':'')+'</strong></div><div class="metric price"><small>Preço de venda '+(p.m2?'por m²':'unitário')+'</small><strong>'+money.format(p.price)+'</strong></div></article>').join(''):'<div class="empty">'+(mode==='ends'?'Nenhuma ponta de estoque':'Nenhum produto com saldo disponível')+' nesta subseção.</div>')}
+function renderProduct(product) {
+  let color = '';
+  let discount = '';
+  if (mode === 'ends') {
+    color = product.available < 6 ? 'red' : product.available < 15 ? 'orange' : 'yellow';
+    discount = '<span class="discount-label">' + (color === 'red' ? 70 : 50) + '% de desconto</span>';
+  }
+
+  return '<article class="product">' +
+    '<div class="product-info' + (color ? ' discount-' + color : '') + '">' +
+      '<div class="sku">LM ' + esc(product.lm) + '</div>' +
+      '<div class="name">' + esc(product.name) + '</div>' + discount +
+    '</div>' +
+    '<div class="metric"><small>Estoque disponível</small><strong>' +
+      qty.format(product.available) + (product.m2 ? ' m²' : '') + '</strong></div>' +
+    '<div class="metric price"><small>Preço de venda ' + (product.m2 ? 'por m²' : 'unitário') +
+      '</small><strong>' + money.format(product.price) + '</strong></div></article>';
+}
+function render(){const section=$('section').value;if(!section){$('results').innerHTML='<div class="empty">Selecione uma subseção para ver os produtos.</div>';return}const products=base.products.filter(p=>p.section===section&&matchesMode(p,mode)).sort((a,b)=>b.available-a.available||a.name.localeCompare(b.name,'pt-BR'));$('results').innerHTML='<div class="result-count">'+products.length+' produto'+(products.length!==1?'s':'')+' nesta subseção</div>'+(products.length?products.map(renderProduct).join(''):'<div class="empty">'+(mode==='ends'?'Nenhuma ponta de estoque':'Nenhum produto com saldo disponível')+' nesta subseção.</div>')}
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>openList(b.dataset.mode)));$('back').addEventListener('click',()=>{$('list').hidden=true;$('home').hidden=false;window.scrollTo(0,0);document.querySelector('[data-mode="'+mode+'"]').focus()});$('section').addEventListener('change',render);
 window.addEventListener('stock-signin',()=>{StockAuth.fetch('/api/stock').then(r=>{if(!r.ok)throw Error();return r.json()}).then(applyBase).catch(()=>{$('error').hidden=false;document.querySelectorAll('[data-mode]').forEach(b=>b.disabled=true)});});
 window.addEventListener('stock-signout',()=>{base=null;pending=null;$('results').innerHTML='';$('section').innerHTML='<option value="">Selecione uma subseção</option>';$('upload-preview').innerHTML='';$('upload-status').textContent='';$('save').disabled=true;$('file').value='';$('all-count').textContent='—';$('ends-count').textContent='—';});
