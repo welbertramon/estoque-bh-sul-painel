@@ -1,0 +1,1 @@
+window.STOCK_CONFIG = {"backend":"apps-script","apiBaseUrl":"https://script.google.com/macros/s/AKfycbyBfrcEvYTcVLwYSyBt97DA2YqdMtqvbFdfhJANhKW8OagR6LwNyZTevY9J3hT8HTVvcA/exec","googleClientId":"637227099565-4kjrc10j66r9hcdn5sde8s4u8j18ups0.apps.googleusercontent.com"};
