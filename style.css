@@ -39,3 +39,24 @@ nav{display:flex;gap:8px}.nav{border:0;background:transparent;padding:10px 12px;
   font-size: 14px;
   font-weight: 700;
 }
+
+.copy-lm {
+  min-height: 44px;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  overflow-wrap: anywhere;
+  text-align: left;
+  cursor: pointer;
+}
+.copy-lm:hover { text-decoration: underline; }
+.copy-status {
+  display: inline-block;
+  margin-inline-start: 6px;
+  font-size: 13px;
+  letter-spacing: normal;
+}
