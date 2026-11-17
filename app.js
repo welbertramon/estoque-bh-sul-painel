@@ -3,9 +3,16 @@ function openList(next){if(!base)return;mode=next;$('home').hidden=true;$('list'
 function renderProduct(product) {
   let color = '';
   let discount = '';
+  let discountedPrice = '';
   if (mode === 'ends') {
     color = product.available < 6 ? 'red' : product.available < 15 ? 'orange' : 'yellow';
-    discount = '<span class="discount-label">' + (color === 'red' ? 70 : 50) + '% de desconto</span>';
+    const percent = color === 'red' ? 70 : 50;
+    discount = '<span class="discount-label">' + percent + '% de desconto</span>';
+    const originalCents = Math.round(product.price * 100);
+    const discountedCents = Math.round(originalCents * (100 - percent) / 100);
+    const unit = product.m2 ? 'por m²' : 'unitário';
+    discountedPrice = '<div class="discount-label"><small>Com desconto ' + unit +
+      '</small><strong>' + money.format(discountedCents / 100) + '</strong></div>';
   }
 
   return '<article class="product">' +
@@ -16,7 +23,7 @@ function renderProduct(product) {
     '<div class="metric"><small>Estoque disponível</small><strong>' +
       qty.format(product.available) + (product.m2 ? ' m²' : '') + '</strong></div>' +
     '<div class="metric price"><small>Preço de venda ' + (product.m2 ? 'por m²' : 'unitário') +
-      '</small><strong>' + money.format(product.price) + '</strong></div></article>';
+      '</small><div><strong>' + money.format(product.price) + '</strong></div>' + discountedPrice + '</div></article>';
 }
 function render(){const section=$('section').value;if(!section){$('results').innerHTML='<div class="empty">Selecione uma subseção para ver os produtos.</div>';return}const products=base.products.filter(p=>p.section===section&&matchesMode(p,mode)).sort((a,b)=>b.available-a.available||a.name.localeCompare(b.name,'pt-BR'));$('results').innerHTML='<div class="result-count">'+products.length+' produto'+(products.length!==1?'s':'')+' nesta subseção</div>'+(products.length?products.map(renderProduct).join(''):'<div class="empty">'+(mode==='ends'?'Nenhuma ponta de estoque':'Nenhum produto com saldo disponível')+' nesta subseção.</div>')}
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>openList(b.dataset.mode)));$('back').addEventListener('click',()=>{$('list').hidden=true;$('home').hidden=false;window.scrollTo(0,0);document.querySelector('[data-mode="'+mode+'"]').focus()});$('section').addEventListener('change',render);
